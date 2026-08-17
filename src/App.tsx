@@ -25,6 +25,46 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Theme state with local persistence and DOM sync
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      const savedTheme = localStorage.getItem('croche_cleu_theme');
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        return savedTheme;
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      body.classList.add('dark');
+      root.style.colorScheme = 'dark';
+    } else {
+      root.classList.remove('dark');
+      body.classList.remove('dark');
+      root.style.colorScheme = 'light';
+    }
+    try {
+      localStorage.setItem('croche_cleu_theme', theme);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    setTheme((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      triggerToast(next === 'dark' ? 'Modo Escuro ativado 🌙' : 'Modo Claro ativado ☀️');
+      return next;
+    });
+  };
+
   // Cart state with persistence
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
@@ -118,11 +158,11 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAFBF7] flex flex-col font-sans selection:bg-[#6e9167] selection:text-white text-[#1E2B1D]">
+    <div className={`${theme === 'dark' ? 'dark ' : ''}min-h-screen bg-[#FAFBF7] dark:bg-[#121811] flex flex-col font-sans selection:bg-[#6e9167] selection:text-white text-[#1E2B1D] dark:text-[#F3F6F1] transition-colors`}>
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 bg-[#1E2B1D] text-white border border-[#DCE5D3] px-5 py-3 rounded-full shadow-xl text-xs flex items-center gap-2.5 animate-in slide-in-from-top-3">
+        <div className="fixed top-20 right-4 z-50 bg-[#1E2B1D] dark:bg-[#1f2a1e] text-white border border-[#DCE5D3] dark:border-[#2c3c2b] px-5 py-3 rounded-full shadow-xl text-xs flex items-center gap-2.5 animate-in slide-in-from-top-3">
           <Check className="w-4 h-4 text-[#96c3a6]" />
           <span>{toastMessage}</span>
         </div>
@@ -145,6 +185,8 @@ export default function App() {
           setSelectedCategory(cat);
           setActiveTab('produtos');
         }}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* Render Main Content based on Mode / Tab */}
@@ -168,15 +210,15 @@ export default function App() {
               />
 
               {/* Featured Products Section */}
-              <section className="py-16 sm:py-20 bg-white border-t border-[#DCE5D3]">
-                <div className="max-w-6xl mx-auto px-6 sm:px-8">
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
+              <section className="py-14 sm:py-20 bg-white dark:bg-[#121811] border-t border-[#DCE5D3] dark:border-[#2c3c2b]">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 sm:mb-12">
                     <div className="text-center sm:text-left">
-                      <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#6e9167] mb-1">
+                      <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#6e9167] dark:text-[#96c3a6] mb-1">
                         <Flower2 className="w-3.5 h-3.5" />
                         <span>Coleção em Destaque</span>
                       </div>
-                      <h2 className="font-serif text-3xl sm:text-4xl text-[#1E2B1D]">
+                      <h2 className="font-serif text-2xl sm:text-4xl text-[#1E2B1D] dark:text-[#F3F6F1]">
                         Peças Mais Amadas da Coleção 60s
                       </h2>
                     </div>
@@ -186,14 +228,14 @@ export default function App() {
                         setSelectedCategory('todos');
                         setActiveTab('produtos');
                       }}
-                      className="text-xs font-semibold uppercase tracking-wider text-[#1E2B1D] hover:text-[#6e9167] flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="text-xs font-semibold uppercase tracking-wider text-[#1E2B1D] dark:text-[#F3F6F1] hover:text-[#6e9167] dark:hover:text-[#96c3a6] flex items-center gap-1.5 transition-colors cursor-pointer min-h-[40px]"
                     >
                       <span>Ver Todo o Catálogo ({PRODUCTS.length} modelos)</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                     {featuredProducts.map((p) => (
                       <ProductCard
                         key={p.id}
@@ -225,35 +267,35 @@ export default function App() {
 
           {/* TAB: PRODUTOS (CATÁLOGO COMPLETO) */}
           {activeTab === 'produtos' && (
-            <section className="py-12 sm:py-16 bg-[#FAFBF7]">
-              <div className="max-w-6xl mx-auto px-6 sm:px-8 space-y-10">
+            <section className="py-10 sm:py-16 bg-[#FAFBF7] dark:bg-[#121811]">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
                 
                 {/* Catalog Head */}
                 <div className="text-center max-w-2xl mx-auto space-y-3">
-                  <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#6e9167]">
+                  <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#6e9167] dark:text-[#96c3a6]">
                     <Flower2 className="w-3.5 h-3.5" />
                     <span>Catálogo Completo Vintage Anos 60</span>
                   </div>
-                  <h1 className="font-serif text-3xl sm:text-4xl text-[#1E2B1D]">
+                  <h1 className="font-serif text-3xl sm:text-4xl text-[#1E2B1D] dark:text-[#F3F6F1]">
                     Bolsas, Roupas e Decoração em Crochê
                   </h1>
-                  <p className="text-xs sm:text-sm text-[#4A5B49] font-light leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#4A5B49] dark:text-[#A3B5A1] font-light leading-relaxed">
                     Cada criação é tecida manualmente pela <strong>Cleu</strong> com fios nobres e acabamento minucioso. Selecione seu modelo ou encomende sob medida.
                   </p>
                 </div>
 
                 {/* Filter and Search Bar */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-[#DCE5D3] vintage-shadow-sm">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white dark:bg-[#192118] p-4 sm:p-5 rounded-3xl border border-[#DCE5D3] dark:border-[#2c3c2b] vintage-shadow-sm">
                   {/* Category Pills */}
                   <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                     {categoriesList.map((cat) => (
                       <button
                         key={cat.id}
                         onClick={() => setSelectedCategory(cat.id)}
-                        className={`text-xs uppercase tracking-wider px-4 py-2 rounded-full border transition-all cursor-pointer flex items-center gap-1.5 ${
+                        className={`text-xs uppercase tracking-wider px-4 py-2 rounded-full border transition-all cursor-pointer flex items-center gap-1.5 min-h-[38px] ${
                           selectedCategory === cat.id
                             ? 'bg-[#6e9167] text-white border-[#6e9167] font-semibold shadow-xs'
-                            : 'bg-[#F2F5ED] text-[#1E2B1D] border-[#DCE5D3] hover:border-[#6e9167]'
+                            : 'bg-[#F2F5ED] dark:bg-[#151c14] text-[#1E2B1D] dark:text-[#F3F6F1] border-[#DCE5D3] dark:border-[#2c3c2b] hover:border-[#6e9167]'
                         }`}
                       >
                         <span>{cat.icon}</span>
@@ -264,23 +306,23 @@ export default function App() {
 
                   {/* Search Input */}
                   <div className="relative w-full md:w-72">
-                    <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4A5B49]" />
+                    <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4A5B49] dark:text-[#A3B5A1]" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Buscar peça, cor ou material..."
-                      className="w-full text-xs pl-10 pr-4 py-2.5 rounded-full bg-[#F2F5ED] border border-[#DCE5D3] text-[#1E2B1D] placeholder:text-[#4A5B49]/60 focus:outline-none focus:ring-1 focus:ring-[#6e9167]"
+                      className="w-full text-xs pl-10 pr-4 py-2.5 rounded-full bg-[#F2F5ED] dark:bg-[#151c14] border border-[#DCE5D3] dark:border-[#2c3c2b] text-[#1E2B1D] dark:text-[#F3F6F1] placeholder:text-[#4A5B49]/60 dark:placeholder:text-[#A3B5A1]/60 focus:outline-none focus:ring-1 focus:ring-[#6e9167]"
                     />
                   </div>
                 </div>
 
                 {/* Products Grid */}
                 {filteredProducts.length === 0 ? (
-                  <div className="text-center py-16 bg-white rounded-3xl border border-[#DCE5D3] p-8 space-y-4 vintage-shadow-sm">
+                  <div className="text-center py-16 bg-white dark:bg-[#192118] rounded-3xl border border-[#DCE5D3] dark:border-[#2c3c2b] p-8 space-y-4 vintage-shadow-sm">
                     <div className="text-4xl">🌻</div>
-                    <h3 className="font-serif font-bold text-xl text-[#1E2B1D]">Nenhuma peça encontrada</h3>
-                    <p className="text-xs text-[#4A5B49] max-w-md mx-auto font-light">
+                    <h3 className="font-serif font-bold text-xl text-[#1E2B1D] dark:text-[#F3F6F1]">Nenhuma peça encontrada</h3>
+                    <p className="text-xs text-[#4A5B49] dark:text-[#A3B5A1] max-w-md mx-auto font-light">
                       Não encontramos nenhuma peça com o termo "{searchQuery}". Experimente buscar por outro nome ou monte seu pedido sob medida com a Cleu!
                     </p>
                     <button
@@ -288,13 +330,13 @@ export default function App() {
                         setSearchQuery('');
                         setSelectedCategory('todos');
                       }}
-                      className="bg-[#6e9167] hover:bg-[#5a7954] text-white text-xs uppercase tracking-wider font-semibold px-6 py-2.5 rounded-full shadow-sm cursor-pointer"
+                      className="bg-[#6e9167] hover:bg-[#5a7954] text-white text-xs uppercase tracking-wider font-semibold px-6 py-2.5 rounded-full shadow-sm cursor-pointer min-h-[40px]"
                     >
                       Limpar Filtros
                     </button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                     {filteredProducts.map((p) => (
                       <ProductCard
                         key={p.id}
@@ -307,19 +349,19 @@ export default function App() {
                 )}
 
                 {/* Custom Order Callout in Catalog */}
-                <div className="bg-[#1E2B1D] text-white rounded-3xl p-8 sm:p-12 text-center space-y-4 border border-[#DCE5D3] vintage-shadow-lg">
-                  <span className="text-[10px] uppercase tracking-[0.25em] font-semibold text-[#c7d1af] block">
+                <div className="bg-[#1E2B1D] dark:bg-[#192118] text-white rounded-3xl p-6 sm:p-12 text-center space-y-4 border border-[#DCE5D3] dark:border-[#2c3c2b] vintage-shadow-lg">
+                  <span className="text-[10px] uppercase tracking-[0.25em] font-semibold text-[#c7d1af] dark:text-[#96c3a6] block">
                     Não encontrou exatamente o que desejava?
                   </span>
                   <h3 className="font-serif text-2xl sm:text-3xl text-white leading-snug">
                     Criamos modelos e paletas exclusivas sob medida
                   </h3>
                   <p className="text-xs text-white/70 max-w-md mx-auto font-light leading-relaxed">
-                    Envie fotos de referência ou combine dimensões e cartelas de fios com a Cleu diretamente no WhatsApp.
+                    Envie fotos de referência ou combine dimensões e cartelas de fios com a Cleu diretamente no Instagram Direct.
                   </p>
                   <button
                     onClick={() => setActiveTab('personalizar')}
-                    className="bg-[#6e9167] hover:bg-[#5a7954] text-white text-xs uppercase tracking-wider font-semibold px-8 py-3.5 rounded-full transition-all shadow-sm inline-flex items-center gap-2 cursor-pointer"
+                    className="bg-[#6e9167] hover:bg-[#5a7954] text-white text-xs uppercase tracking-wider font-semibold px-8 py-3.5 rounded-full transition-all shadow-sm inline-flex items-center gap-2 cursor-pointer min-h-[44px]"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-[#c7d1af]" />
                     <span>Abrir Montador de Peças</span>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Instagram, MessageCircle, Heart, ShieldCheck, Truck, Sparkles, Flower2 } from 'lucide-react';
+import { Instagram, Heart, ShieldCheck, Truck, Sparkles, Flower2 } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (tab: 'inicio' | 'produtos' | 'personalizar' | 'comprar' | 'depoimentos') => void;
@@ -8,9 +8,9 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAudit }) => {
   return (
-    <footer className="bg-[#1E2B1D] text-white/80 border-t border-[#DCE5D3]">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+    <footer className="bg-[#1E2B1D] dark:bg-[#0d130c] text-white/80 border-t border-[#DCE5D3] dark:border-[#2c3c2b] transition-colors">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-10 pb-10 sm:pb-12 border-b border-white/10">
           
           {/* Brand Col */}
           <div className="md:col-span-2 space-y-4 text-center md:text-left">
@@ -30,19 +30,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAudit }) => {
                 href="https://www.instagram.com/crochedacleu.pravoce"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white/5 hover:bg-[#6e9167] hover:text-white text-white/80 p-2.5 rounded-full transition-all border border-white/10"
+                className="bg-white/10 hover:bg-[#6e9167] text-white p-2.5 rounded-full transition-all border border-white/15 flex items-center gap-2 text-xs"
                 title="Instagram @crochedacleu.pravoce"
               >
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a
-                href="https://wa.me/5511999999999"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white/5 hover:bg-[#6e9167] hover:text-white text-white/80 p-2.5 rounded-full transition-all border border-white/10"
-                title="WhatsApp da Cleu"
-              >
-                <MessageCircle className="w-4 h-4" />
+                <Instagram className="w-4 h-4 text-[#c7d1af]" />
+                <span className="font-medium">@crochedacleu.pravoce</span>
               </a>
             </div>
           </div>
@@ -102,7 +94,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAudit }) => {
               <div className="pt-2">
                 <button
                   onClick={onOpenAudit}
-                  className="text-[#c7d1af] hover:underline text-xs block cursor-pointer"
+                  className="text-[#c7d1af] hover:underline text-xs block cursor-pointer mx-auto md:mx-0"
                 >
                   📊 Relatório de Auditoria UX / CRO
                 </button>
@@ -113,15 +105,16 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAudit }) => {
         </div>
 
         {/* Bottom Credits */}
-        <div className="pt-8 text-center space-y-2 text-xs text-white/50 font-light">
+        <div className="pt-6 sm:pt-8 text-center space-y-2 text-xs text-white/50 font-light">
           <p className="flex items-center justify-center gap-1.5">
             Feito à mão com carinho por Crochê da Cleu • Todos os direitos reservados.
           </p>
           <p className="text-[10px] text-white/40">
-            Peças autorais com estética anos 60 • Atendimento carinhoso via WhatsApp
+            Peças autorais com estética anos 60 • Atendimento carinhoso via Instagram Direct @crochedacleu.pravoce
           </p>
         </div>
       </div>
     </footer>
   );
 };
+

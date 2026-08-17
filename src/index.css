@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --color-primary-green: #6e9167;
   --color-soft-olive: #c7d1af;
@@ -11,12 +13,24 @@
   --color-vintage-border: #DCE5D3;
   --text-dark: #1E2B1D;
   --text-muted: #4A5B49;
+  color-scheme: light;
+}
+
+html.dark, body.dark, :root.dark {
+  --color-vintage-bg: #121811;
+  --color-vintage-surface: #192118;
+  --color-vintage-card: #1f2a1e;
+  --color-vintage-border: #2c3c2b;
+  --text-dark: #F3F6F1;
+  --text-muted: #A3B5A1;
+  color-scheme: dark;
 }
 
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: var(--text-dark);
   background-color: var(--color-vintage-bg);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .font-serif {
@@ -40,24 +54,33 @@ body {
   box-shadow: 0 10px 30px -5px rgba(30, 43, 29, 0.08), 0 2px 6px -1px rgba(30, 43, 29, 0.05);
 }
 
+.dark .vintage-shadow {
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
 .vintage-shadow-sm {
   box-shadow: 0 4px 14px -2px rgba(30, 43, 29, 0.05);
+}
+
+.dark .vintage-shadow-sm {
+  box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.3);
 }
 
 .vintage-shadow-lg {
   box-shadow: 0 20px 40px -10px rgba(30, 43, 29, 0.12);
 }
 
-.gallery-shadow {
-  box-shadow: 0 10px 30px -5px rgba(30, 43, 29, 0.08), 0 2px 6px -1px rgba(30, 43, 29, 0.05);
+.dark .vintage-shadow-lg {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.55);
 }
 
-.gallery-shadow-sm {
-  box-shadow: 0 4px 14px -2px rgba(30, 43, 29, 0.05);
+/* Hide scrollbar for clean horizontal flicking on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-
-.gallery-shadow-lg {
-  box-shadow: 0 20px 40px -10px rgba(30, 43, 29, 0.12);
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* 60s Groovy Flower & Stitching borders */
@@ -69,5 +92,6 @@ body {
   background-color: #c7d1af;
   color: #1E2B1D;
 }
+
 
 
